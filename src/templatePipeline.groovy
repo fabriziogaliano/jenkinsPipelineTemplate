@@ -40,12 +40,12 @@ pipeline {
                 echo "Application Deployed to ${DEPLOY_ENV}"
             }
         }
-        // stage('Clean') {
-        //     stage {
-        //         cleanUp()
-        //         echo "Old images removed from CI Server"
-        //     }
-        // }
+        stage('Clean') {
+            steps {
+                cleanUp()
+                echo "Old images removed from CI Server"
+            }
+        }
     }
 }
 
