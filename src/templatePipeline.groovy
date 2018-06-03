@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         DOCKER_REGISTRY = 'registry.zombox.it'
-        GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
+        GIT_REPOSITORY = "https://github.com/fabriziogaliano"
         DEPLOY_SSH_TARGET = '192.168.0.109'
         DEPLOY_SSH_USER = 'root'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
