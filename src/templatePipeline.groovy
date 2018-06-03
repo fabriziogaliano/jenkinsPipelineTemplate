@@ -23,7 +23,7 @@ pipeline {
             }
         }
 
-        if (${GIT_REF} == "develop") {
+        if (${GIT_REF} == "develop") || (${GIT_REF} == "dev") || (${GIT_REF} == "sviluppo") {
             environment {
                 DOCKER_REGISTRY = 'registry.zombox.it'
                 GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
