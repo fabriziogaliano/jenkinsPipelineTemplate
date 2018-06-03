@@ -22,28 +22,70 @@ pipeline {
                 echo "Build Completed"
             }
         }
-        stage('Docker Tag') {
-            steps {
-                dockerTag()
-                echo "Tag Completed"
+
+        if (${GIT_REF} == "develop") {
+            environment {
+                DOCKER_REGISTRY = 'registry.zombox.it'
+                GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
+                DEPLOY_SSH_TARGET = '192.168.0.109'
+                DEPLOY_SSH_USER = 'root'
+                DEPLOY_SSH_DEFAULT_PATH = '/docker'
             }
-        }
-        stage('Docker Push') {
-            steps {
-                dockerPush()
-                echo "Push Complete"
+            stage('Docker Tag') {
+                steps {
+                    dockerTag()
+                    echo "Tag Completed"
+                }
             }
-        }
-        stage('Deploy') {
-            steps {
-                deploy()
-                echo "Application Deployed to ${DEPLOY_ENV}"
+            stage('Docker Push') {
+                steps {
+                    dockerPush()
+                    echo "Push Complete"
+                }
             }
-        }
-        stage('Clean') {
-            steps {
-                cleanUp()
-                echo "Old images removed from CI Server"
+            stage('Deploy') {
+                steps {
+                    deploy()
+                    echo "Application Deployed to ${DEPLOY_ENV}"
+                }
+            }
+            stage('Clean') {
+                steps {
+                    cleanUp()
+                    echo "Old images removed from CI Server"
+                }
+            }
+        } else {
+            environment {
+                DOCKER_REGISTRY = 'registry.aws.it'
+                GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
+                DEPLOY_SSH_TARGET = '192.168.0.109'
+                DEPLOY_SSH_USER = 'root'
+                DEPLOY_SSH_DEFAULT_PATH = '/docker'
+            }
+            stage('Docker Tag') {
+                steps {
+                    dockerTag()
+                    echo "Tag Completed"
+                }
+            }
+            stage('Docker Push') {
+                steps {
+                    dockerPush()
+                    echo "Push Complete"
+                }
+            }
+            stage('Deploy') {
+                steps {
+                    deploy()
+                    echo "Application Deployed to ${DEPLOY_ENV}"
+                }
+            }
+            stage('Clean') {
+                steps {
+                    cleanUp()
+                    echo "Old images removed from CI Server"
+                }
             }
         }
     }
