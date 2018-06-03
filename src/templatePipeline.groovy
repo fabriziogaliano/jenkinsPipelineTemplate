@@ -80,6 +80,6 @@ def cleanUp() {
 
 def deploy() {
     node {
-        sh 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.109 << EOF docker-compose -f /docker/nginx/docker-compose.yml up -d --force-recreate EOF'
+        sh 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.109 docker-compose -f /docker/nginx/docker-compose.yml up -d --force-recreate'
     }
 }
