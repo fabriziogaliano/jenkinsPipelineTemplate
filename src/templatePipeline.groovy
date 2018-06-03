@@ -40,7 +40,7 @@ pipeline {
                 echo "Application Deployed to ${DEPLOY_ENV}"
             }
         }
-        stage('Clean Up') {
+        stage('Clean') {
             stage {
                 cleanUp()
                 echo "Old images removed from CI Server"
