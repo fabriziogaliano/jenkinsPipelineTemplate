@@ -3,8 +3,7 @@ pipeline {
     agent any
     environment {
         DOCKER_REGISTRY = 'registry.zombox.it'
-        GIT_REPO_PROTO = 'https'
-        GIT_REPO = 'github.com/fabriziogaliano'
+        GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
         DEPLOY_SSH_TARGET = '192.168.0.109'
         DEPLOY_SSH_USER = 'root'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
@@ -13,8 +12,7 @@ pipeline {
         stage('Git pull') {
             agent any
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/${GIT_REF}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', url: '${GIT_REPO_PROTO}://${GIT_REPO}/${JOB_NAME}.git']]])
-                echo "${GIT_REPOSITORY}"
+                checkout([$class: 'GitSCM', branches: [[name: '*/${GIT_REF}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
                 echo "Project Updated"
             }
         }
