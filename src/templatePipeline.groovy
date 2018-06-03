@@ -1,10 +1,6 @@
 def myJenkinsPipelineTemplate(Map templateParams) {
         pipeline {
             agent any
-            parameters {
-                string(name: 'DockerRegistry', description: 'Docker registry URL, without Protocol')
-                string(name: 'Project name')
-            }
             environment {
                 DOCKER_REGISTRY = 'registry.zombox.it'
             }
