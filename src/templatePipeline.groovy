@@ -5,13 +5,21 @@ pipeline {
     agent any
 
     environment {
+        // Default Docker build image name
         DOCKER_IMAGE_BUILD_NAME = 'ciserver'
-        DOCKER_REGISTRY = 'registry.zombox.it'
-        DOCKER_AWS_REGISTRY = 'registry.aws.it'
-        GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
-        DEPLOY_SSH_TARGET = '192.168.0.109'
-        DEPLOY_SSH_USER = 'root'
+        // Docker Registry
+        DOCKER_REGISTRY = 'whale.mosfarm.eu'
+        DOCKER_AWS_REGISTRY = 'xxxxxxxxxxx.dkr.ecr.eu-west-1.amazonaws.com'
+        DOCKER_REGISTRY_CRED_ID = '655afa6d-5a19-4f15-97ce-29ac43336234'
+        // Git Repository
+        GIT_REPOSITORY = 'https://github.com/fabriziogaliano/'
+        GIT_REPO_CRED_ID = 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5'
+        // Deploy Env
+        DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.107'
+        DEPLOY_SSH_PROD_TARGET = 'root@192.168.0.107'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
+        DEPLOY_SSH_CUSTOM_PATH = null
+
     }
 
     // Git checkout
@@ -23,19 +31,19 @@ pipeline {
                 echo "--------------------------------------------------------------"
                 echo "----------------------> Project Update <----------------------"
                 echo "--------------------------------------------------------------"
-                checkout([$class: 'GitSCM', branches: [[name: '*/${GIT_REF}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/${GIT_REF}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '540e6065-3edc-4888-8984-4a0ab4f1023b', url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
                 echo "----------------------> Project Updated <---------------------"
             }
         }
 
-        // Build 
+        // Build Docker image
 
         stage('Docker Build') {
             steps {
                 echo "-------------------------------------------------------------"
                 echo "----------------------> Project Build <----------------------"
                 echo "-------------------------------------------------------------"
-                dockerBuild()
+                // dockerBuild()
                 echo "----------------------> Project Builded <--------------------"
             }
         }
@@ -63,7 +71,7 @@ pipeline {
                         dockerAwsTag()
                         dockerAwsPush()
                         echo "----------------------> Docker AWS Tag/Push OK <-------------------"
-                        cleanAwsUp()
+                        // cleanAwsUp()
                         echo "---------------------------------------------------------------------------------"
                         echo "----------------------> Old images removed from CI Server <----------------------"
                         echo "---------------------------------------------------------------------------------"
@@ -76,29 +84,44 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                script {
-                    if (env.GIT_REF == 'develop') {
-                        echo "-------------------------------------------------------"
-                        echo "----------------------> Deploy! <----------------------"
-                        echo "-------------------------------------------------------"
-                        deploy()
-                        echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
-                    } else {
-                        echo "-------------------------------------------------------"
-                        echo "----------------------> Deploy! <----------------------"
-                        echo "-------------------------------------------------------"
-                        deploy()
-                        echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
-                    }
+                    deployInf()
                 }
             }
-        }
 
     }
 }
 
 // Main functions
 
+def deployInf() {
+    if ( env.DEPLOY_ENV == 'dev' ) {
+
+        DEPLOY_SSH_TARGET = 'root@192.168.0.107'
+        DEPLOY_ENV = 'DEVELOPMENT!'
+      
+        echo "---------------> Deploy Infrastructure ------> ${DEPLOY_ENV}"
+
+        echo "-------------------------------------------------------"
+        echo "----------------------> Deploy! <----------------------"
+        echo "-------------------------------------------------------"
+        deploy(DEPLOY_SSH_TARGET)
+        echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
+    } 
+    
+    else {
+
+        DEPLOY_SSH_TARGET = 'root@192.168.0.107'
+        DEPLOY_ENV = 'PRODUCTION!'
+
+        echo "---------------> Deploy Infrastructure ------> ${DEPLOY_ENV}"
+
+        echo "-------------------------------------------------------"
+        echo "----------------------> Deploy! <----------------------"
+        echo "-------------------------------------------------------"
+        deploy(DEPLOY_SSH_TARGET)
+        echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
+    }
+}
 
 def dockerBuild() {
     node {
@@ -122,7 +145,7 @@ def dockerAwsTag() {
 
 def dockerPush() {
     node {
-        withDockerRegistry(credentialsId: '655afa6d-5a19-4f15-97ce-29ac43336234', url: 'https://registry.zombox.it') {
+        withDockerRegistry(credentialsId: '${DOCKER_REGISTRY_CRED_ID}', url: 'https://${DOCKER_REGISTRY}') {
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
     }
@@ -131,10 +154,13 @@ def dockerPush() {
 
 def dockerAwsPush() {
     node {
-        withDockerRegistry(credentialsId: '655afa6d-5a19-4f15-97ce-29ac43336234', url: 'https://registry.aws.it') {
-        sh 'docker push ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}'
-        sh 'docker push ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest'
-    }
+
+        env.AWS_ECR_LOGIN = 'true'
+
+        docker.withRegistry('https://${DOCKER_AWS_REGISTRY}', 'ecr:eu-west-1:aws_registry_credential') {
+        docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('latest')
+        docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${GIT_REF}')
+        }
     }
 }
 
@@ -154,8 +180,16 @@ def cleanAwsUp() {
     }
 }
 
-def deploy() {
-    node {
-        sh 'ssh -T -o StrictHostKeyChecking=no ${DEPLOY_SSH_USER}@${DEPLOY_SSH_TARGET} docker-compose -f ${DEPLOY_SSH_DEFAULT_PATH}/${JOB_NAME}/docker-compose.yml up -d --force-recreate'
+def deploy(DEPLOY_SSH_TARGET) {
+    if (env.DEPLOY_MODE == "docker-compose") {
+        node {
+            sh 'ssh -T -o StrictHostKeyChecking=no ${DEPLOY_SSH_TARGET} docker-compose -f ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}/docker-compose.yml up -d --force-recreate'
+            echo "Deployed with DOCKER-COMPOSE"
+        } 
+    } else {
+        node {
+            echo "ssh -T -o StrictHostKeyChecking=no ${DEPLOY_SSH_TARGET} docker stack up -c ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}/docker-compose.yml --with-registry-auth stack_${DOCKER_STACK_NAMESPACE}${JOB_NAME}"
+            echo "Deployed with SWARM mode"
+        }
     }
 }
