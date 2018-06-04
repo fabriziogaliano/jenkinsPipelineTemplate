@@ -34,14 +34,23 @@ pipeline {
                 echo "--------------------------------------------------------------"
 
                 checkout([$class: 'GitSCM', 
-                branches: [[name: '${GIT_REF}']], 
+                branches: [[name: '*/${GIT_REF}']], 
                 doGenerateSubmoduleConfigurations: false, 
                 extensions: [], 
                 submoduleCfg: [], 
                 userRemoteConfigs: [[
                 credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', 
-                refspec: '+refs/heads/*:refs/remotes/*', 
                 url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
+
+                // checkout([$class: 'GitSCM', 
+                // branches: [[name: '${GIT_REF}']], 
+                // doGenerateSubmoduleConfigurations: false, 
+                // extensions: [], 
+                // submoduleCfg: [], 
+                // userRemoteConfigs: [[
+                // credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', 
+                // refspec: '+refs/heads/*:refs/remotes/*', 
+                // url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
 
                 echo "----------------------> Project Updated <---------------------"
             }
