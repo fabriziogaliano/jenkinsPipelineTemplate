@@ -14,6 +14,8 @@ pipeline {
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
     }
 
+    // Git checkout
+
     stages {
         stage('Git Checkout') {
             agent any
@@ -70,15 +72,28 @@ pipeline {
             }
         }
 
+        // Project Deploy
+
         stage('Deploy') {
             steps {
-                echo "-------------------------------------------------------"
-                echo "----------------------> Deploy! <----------------------"
-                echo "-------------------------------------------------------"
-                deploy()
-                echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
+                script {
+                    if (env.GIT_REF == 'develop') {
+                        echo "-------------------------------------------------------"
+                        echo "----------------------> Deploy! <----------------------"
+                        echo "-------------------------------------------------------"
+                        deploy()
+                        echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
+                    } else {
+                        echo "-------------------------------------------------------"
+                        echo "----------------------> Deploy! <----------------------"
+                        echo "-------------------------------------------------------"
+                        deploy()
+                        echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
+                    }
+                }
             }
         }
+
     }
 }
 
