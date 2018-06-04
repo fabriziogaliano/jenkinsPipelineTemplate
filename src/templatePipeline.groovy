@@ -79,6 +79,7 @@ pipeline {
                 echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
             }
         }
+    }
 }
 
 // Main functions
