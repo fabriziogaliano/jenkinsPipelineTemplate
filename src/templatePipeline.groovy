@@ -15,8 +15,8 @@ pipeline {
         GIT_REPOSITORY = 'https://github.com/fabriziogaliano/'
         GIT_REPO_CRED_ID = 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5'
         // Deploy Env
-        DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.107'
-        DEPLOY_SSH_PROD_TARGET = 'root@192.168.0.107'
+        DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108'
+        DEPLOY_SSH_PROD_TARGET = 'root@192.168.0.108'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
         DEPLOY_SSH_CUSTOM_PATH = null
 
@@ -96,7 +96,7 @@ pipeline {
 def deployInf() {
     if ( env.DEPLOY_ENV == 'dev' ) {
 
-        DEPLOY_SSH_TARGET = 'root@192.168.0.107'
+        DEPLOY_SSH_TARGET = 'root@192.168.0.108'
         DEPLOY_ENV = 'DEVELOPMENT!'
       
         echo "---------------> Deploy Infrastructure ------> ${DEPLOY_ENV}"
@@ -110,7 +110,7 @@ def deployInf() {
     
     else {
 
-        DEPLOY_SSH_TARGET = 'root@192.168.0.107'
+        DEPLOY_SSH_TARGET = 'root@192.168.0.108'
         DEPLOY_ENV = 'PRODUCTION!'
 
         echo "---------------> Deploy Infrastructure ------> ${DEPLOY_ENV}"
