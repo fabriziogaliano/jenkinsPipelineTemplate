@@ -67,7 +67,7 @@ pipeline {
                 echo "----------------------> Deploy! <----------------------"
                 echo "-------------------------------------------------------"
                 deploy()
-                echo "-------------> Deploy OK to ${DEPLOY_ENV} -------------"
+                echo "------> Deploy OK to ${DEPLOY_ENV} Environment <-------"
             }
         }
         stage('Clean') {
