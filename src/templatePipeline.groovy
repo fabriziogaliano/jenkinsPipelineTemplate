@@ -40,7 +40,7 @@ pipeline {
 
         // Tag/Push docker images, conditional steps to check if Dev/prod environment
 
-        stage('Docker Artifact') {
+        stage('Docker Tag/Push') {
             steps {
                 script {
                     if (env.GIT_REF == 'develop') {
