@@ -18,7 +18,7 @@ pipeline {
         DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108'
         DEPLOY_SSH_PROD_TARGET = 'root@192.168.0.108'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
-        DEPLOY_SSH_CUSTOM_PATH = null
+        // DEPLOY_SSH_CUSTOM_PATH = null
 
     }
 
@@ -91,7 +91,9 @@ pipeline {
     }
 }
 
-// Main functions
+def DEPLOY_SSH_CUSTOM_PATH = ""
+
+// Functions
 
 def deployInf() {
     if ( env.DEPLOY_ENV == 'dev' ) {
