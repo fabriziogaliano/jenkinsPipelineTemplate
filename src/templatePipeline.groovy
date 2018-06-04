@@ -63,8 +63,11 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                echo "-------------------------------------------------------"
+                echo "----------------------> Deploy! <----------------------"
+                echo "-------------------------------------------------------"
                 deploy()
-                echo "Application Deployed to ${DEPLOY_ENV}"
+                echo "-------------> Deploy OK to ${DEPLOY_ENV} -------------"
             }
         }
         stage('Clean') {
