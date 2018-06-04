@@ -72,7 +72,7 @@ pipeline {
             }
         }
 
-        // Project Deploy
+        // Project Deploy, conditional steps to check if Dev/prod environment
 
         stage('Deploy') {
             steps {
