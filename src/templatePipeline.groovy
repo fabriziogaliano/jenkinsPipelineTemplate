@@ -183,12 +183,12 @@ def cleanAwsUp() {
 def deploy(DEPLOY_SSH_TARGET) {
     if (env.DEPLOY_MODE == "docker-compose") {
         node {
-            sh 'ssh -T -o StrictHostKeyChecking=no ${DEPLOY_SSH_TARGET} docker-compose -f ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}/docker-compose.yml up -d --force-recreate'
+            sh "ssh -T -o StrictHostKeyChecking=no ${DEPLOY_SSH_TARGET} docker-compose -f ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}/docker-compose.yml up -d --force-recreate"
             echo "Deployed with DOCKER-COMPOSE"
         } 
     } else {
         node {
-            echo "ssh -T -o StrictHostKeyChecking=no ${DEPLOY_SSH_TARGET} docker stack up -c ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}/docker-compose.yml --with-registry-auth stack_${DOCKER_STACK_NAMESPACE}${JOB_NAME}"
+            sh "ssh -T -o StrictHostKeyChecking=no ${DEPLOY_SSH_TARGET} docker stack up -c ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}/docker-compose.yml --with-registry-auth stack_${DOCKER_STACK_NAMESPACE}${JOB_NAME}"
             echo "Deployed with SWARM mode"
         }
     }
