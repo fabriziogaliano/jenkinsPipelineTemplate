@@ -102,6 +102,12 @@ def cleanUp() {
     node {
         sh 'docker rmi ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF} '
         sh 'docker rmi ${DOCKER_REGISTRY}/${JOB_NAME}:latest '
+        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} '
+    }
+}
+
+def cleanAwsUp() {
+    node {
         sh 'docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF} '
         sh 'docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} '
