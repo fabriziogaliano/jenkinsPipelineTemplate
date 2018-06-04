@@ -33,19 +33,19 @@ pipeline {
                 echo "----------------------> Project Update <----------------------"
                 echo "--------------------------------------------------------------"
 
-                checkout scm: [$class: 'GitSCM', 
-                userRemoteConfigs: [[url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git', 
-                credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5']], branches: [[name: v0.0.1]]],
-                poll: false
+                // checkout scm: [$class: 'GitSCM', 
+                // userRemoteConfigs: [[url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git', 
+                // credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5']], branches: [[name: v0.0.1]]],
+                // poll: false
 
-                // checkout([$class: 'GitSCM', 
-                // branches: [[name: '*/${GIT_REF}']], 
-                // doGenerateSubmoduleConfigurations: false, 
-                // extensions: [], 
-                // submoduleCfg: [], 
-                // userRemoteConfigs: [[
-                // credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', 
-                // url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
+                checkout([$class: 'GitSCM', 
+                branches: [[name: '*/${GIT_REF}']], 
+                doGenerateSubmoduleConfigurations: false, 
+                extensions: [], 
+                submoduleCfg: [], 
+                userRemoteConfigs: [[
+                credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', 
+                url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
 
                 // checkout([$class: 'GitSCM', 
                 // branches: [[name: '${GIT_REF}']], 
