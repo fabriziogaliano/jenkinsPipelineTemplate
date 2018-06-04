@@ -187,7 +187,7 @@ def dockerAwsTag() {
 
 def dockerPush() {
     node {
-        withDockerRegistry(credentialsId: '655afa6d-5a19-4f15-97ce-29ac43336234', url: 'https://${DOCKER_REGISTRY}') {
+        withDockerRegistry(credentialsId: '655afa6d-5a19-4f15-97ce-29ac43336234', url: "https://${DOCKER_REGISTRY}") {
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
     }
@@ -199,7 +199,7 @@ def dockerAwsPush() {
 
         env.AWS_ECR_LOGIN = 'true'
 
-        docker.withRegistry('https://${DOCKER_AWS_REGISTRY}', 'ecr:eu-west-1:aws_registry_credential') {
+        docker.withRegistry("https://${DOCKER_AWS_REGISTRY}", 'ecr:eu-west-1:aws_registry_credential') {
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('latest')
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${GIT_REF}')
         }
