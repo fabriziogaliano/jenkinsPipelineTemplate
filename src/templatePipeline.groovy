@@ -25,11 +25,13 @@ pipeline {
             }
         }
 
-        stage('Docker Tag') {
-            if (${GIT_REF} == "develop") {
-                steps {
-                    dockerTag()
-                    echo "Tag Completed"
+        node {
+            stage('Docker Tag') {
+                if (${GIT_REF} == "develop") {
+                    steps {
+                        dockerTag()
+                        echo "Tag Completed"
+                    }
                 }
             }
         }
