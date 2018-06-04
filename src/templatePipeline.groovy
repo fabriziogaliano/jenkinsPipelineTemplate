@@ -1,5 +1,7 @@
 // Pipeline
 
+def DEPLOY_SSH_CUSTOM_PATH = ""
+
 pipeline {
 
     agent any
@@ -19,7 +21,6 @@ pipeline {
         DEPLOY_SSH_PROD_TARGET = 'root@192.168.0.108'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
         // DEPLOY_SSH_CUSTOM_PATH = null
-
     }
 
     // Git checkout
@@ -31,7 +32,15 @@ pipeline {
                 echo "--------------------------------------------------------------"
                 echo "----------------------> Project Update <----------------------"
                 echo "--------------------------------------------------------------"
-                checkout([$class: 'GitSCM', branches: [[name: '*/${GIT_REF}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
+
+                checkout([$class: 'GitSCM', 
+                branches: [[name: 'refs/remote/${GIT_REF}']], 
+                doGenerateSubmoduleConfigurations: false, 
+                extensions: [], 
+                submoduleCfg: [], 
+                userRemoteConfigs: [[credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', 
+                url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
+
                 echo "----------------------> Project Updated <---------------------"
             }
         }
@@ -90,8 +99,6 @@ pipeline {
 
     }
 }
-
-def DEPLOY_SSH_CUSTOM_PATH = ""
 
 // Functions
 
