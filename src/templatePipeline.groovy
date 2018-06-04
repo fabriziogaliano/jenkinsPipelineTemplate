@@ -52,30 +52,6 @@ pipeline {
             steps {
                 cleanUp()
                 echo "Old images removed from CI Server"
-            }
-        }
-        stage('Docker Tag') {
-            steps {
-                dockerTag()
-                echo "Tag Completed"
-            }
-        }
-        stage('Docker Push') {
-            steps {
-                dockerPush()
-                echo "Push Complete"
-            }
-        }
-        stage('Deploy') {
-            steps {
-                deploy()
-                echo "Application Deployed to ${DEPLOY_ENV}"
-            }
-        }
-        stage('Clean') {
-            steps {
-                cleanUp()
-                echo "Old images removed from CI Server"
                 }
             }
         }
