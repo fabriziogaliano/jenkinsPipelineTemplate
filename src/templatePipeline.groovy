@@ -26,14 +26,17 @@ pipeline {
         }
 
         stage('Docker Tag') {
-                steps {
-                    script {
-                        if (${GIT_REF} == "develop") {
-                            dockerTag()
-                            echo "Tag Completed"
-                        }
+            steps {
+                script {
+                    if (env.GIT_REF == 'develop') {
+                        dockerTag()
+                        echo "Tag Completed"
+                    } else {
+                        dockerAwsTag()
+                        echo "Tag Completed"
                     }
                 }
+            }
         }
 
         stage('Docker Push') {
