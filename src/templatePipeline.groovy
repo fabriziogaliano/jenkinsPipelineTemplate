@@ -15,13 +15,13 @@ pipeline {
             agent any
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/${GIT_REF}']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
-                echo "Project Updated"
+                echo "----------------------> Project Updated"
             }
         }
         stage('Docker Build') {
             steps {
                 dockerBuild()
-                echo "Build Completed"
+                echo "----------------------> Build Completed"
             }
         }
 
@@ -30,10 +30,10 @@ pipeline {
                 script {
                     if (env.GIT_REF == 'develop') {
                         dockerTag()
-                        echo "Tag Completed"
+                        echo "----------------------> Tag Completed"
                     } else {
                         dockerAwsTag()
-                        echo "Tag Completed"
+                        echo "----------------------> Tag Completed"
                     }
                 }
             }
@@ -42,7 +42,7 @@ pipeline {
         stage('Docker Push') {
             steps {
                 dockerPush()
-                echo "Push Complete"
+                echo "----------------------> Push Complete"
             }
         }
         stage('Deploy') {
@@ -54,7 +54,7 @@ pipeline {
         stage('Clean') {
             steps {
                 cleanUp()
-                echo "Old images removed from CI Server"
+                echo "----------------------> Old images removed from CI Server"
                 }
             }
         }
