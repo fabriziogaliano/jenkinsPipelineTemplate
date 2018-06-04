@@ -8,7 +8,7 @@ pipeline {
         // Default Docker build image name
         DOCKER_IMAGE_BUILD_NAME = 'ciserver'
         // Docker Registry
-        DOCKER_REGISTRY = 'whale.mosfarm.eu'
+        DOCKER_REGISTRY = 'registry.zombox.it'
         DOCKER_AWS_REGISTRY = 'xxxxxxxxxxx.dkr.ecr.eu-west-1.amazonaws.com'
         DOCKER_REGISTRY_CRED_ID = '655afa6d-5a19-4f15-97ce-29ac43336234'
         // Git Repository
