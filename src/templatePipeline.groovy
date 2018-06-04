@@ -34,7 +34,7 @@ pipeline {
                 echo "--------------------------------------------------------------"
 
                 checkout([$class: 'GitSCM', 
-                branches: [[name: '${GIT_REF}']], 
+                branches: [[name: '*/${GIT_REF}']], 
                 doGenerateSubmoduleConfigurations: false, 
                 extensions: [], 
                 submoduleCfg: [], 
