@@ -9,17 +9,21 @@ pipeline {
     environment {
         // Default Docker build image name
         DOCKER_IMAGE_BUILD_NAME = 'ciserver'
+
         // Docker Registry
         DOCKER_REGISTRY = 'registry.zombox.it'
         DOCKER_AWS_REGISTRY = 'xxxxxxxxxxx.dkr.ecr.eu-west-1.amazonaws.com'
         DOCKER_REGISTRY_CRED_ID = '655afa6d-5a19-4f15-97ce-29ac43336234'
+
         // Git Repository
         GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
         GIT_REPO_CRED_ID = 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5'
+
         // Deploy Env
-        DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108'
+        DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108' // if multiple hops are present put "," in the middle
         DEPLOY_SSH_PROD_TARGET = 'root@192.168.0.108'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
+
         // DEPLOY_SSH_CUSTOM_PATH = null
     }
 
