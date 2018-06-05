@@ -2,13 +2,13 @@
 
 def DEPLOY_SSH_CUSTOM_PATH = ""
 
-// def env = build.getEnvironment()
-// def gitCommit = env['GIT_COMMIT']
-// def shortGitCommit = gitCommit[0..6]
+def env = build.getEnvironment()
+def gitCommit = env['GIT_COMMIT']
+def shortGitCommit = gitCommit[0..6]
 
-// def sgc = new ParametersAction([
-//   new StringParameterValue("SHORT_GIT_COMMIT", shortGitCommit)
-// ])
+def sgc = new ParametersAction([
+  new StringParameterValue("SHORT_GIT_COMMIT", shortGitCommit)
+])
 
 pipeline {
 
@@ -200,7 +200,7 @@ def dockerAwsTag() {
     }
 }
 
-def dockerPushsgc() {
+def dockerPush() {
     node {
         withDockerRegistry(credentialsId: "${DOCKER_REGISTRY_CRED_ID}", url: "https://${DOCKER_REGISTRY}") {
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
