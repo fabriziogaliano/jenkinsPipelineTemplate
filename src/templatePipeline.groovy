@@ -184,33 +184,33 @@ def dockerBuild() {
     }
 }
 
-def dockerTag(sgc) {
+def dockerTag() {
     node {
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
-        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
+        // sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
-def dockerAwsTag(sgc) {
+def dockerAwsTag() {
     node {
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}'
-        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
+        // sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
-def dockerPushsgc(sgc) {
+def dockerPushsgc() {
     node {
         withDockerRegistry(credentialsId: "${DOCKER_REGISTRY_CRED_ID}", url: "https://${DOCKER_REGISTRY}") {
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
-        sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
+        // sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
         }
     }
 }
 
-def dockerAwsPush(sgc) {
+def dockerAwsPush() {
     node {
 
         env.AWS_ECR_LOGIN = 'true'
@@ -218,26 +218,26 @@ def dockerAwsPush(sgc) {
         docker.withRegistry("https://${DOCKER_AWS_REGISTRY}", 'ecr:eu-west-1:aws_registry_credential') {
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('latest')
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${GIT_REF}')
-        docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${SHORT_GIT_COMMIT}')
+        // docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${SHORT_GIT_COMMIT}')
         }
     }
 }
 
-def cleanUp(sgc) {
+def cleanUp() {
     node {
         sh 'docker rmi ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF} '
         sh 'docker rmi ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF}'
-        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
+        // sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
-def cleanAwsUp(sgc) {
+def cleanAwsUp() {
     node {
         sh 'docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF}'
-        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
+        // sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
