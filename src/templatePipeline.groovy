@@ -3,12 +3,12 @@
 def DEPLOY_SSH_CUSTOM_PATH = ""
 
 // def env = build.getEnvironment()
-def gitCommit = env['GIT_COMMIT']
-def shortGitCommit = gitCommit[0..6]
+// def gitCommit = env['GIT_COMMIT']
+// def shortGitCommit = gitCommit[0..6]
 
-def sgc = new ParametersAction([
-  new StringParameterValue("SHORT_GIT_COMMIT", shortGitCommit)
-])
+// def sgc = new ParametersAction([
+//   new StringParameterValue("SHORT_GIT_COMMIT", shortGitCommit)
+// ])
 
 pipeline {
 
