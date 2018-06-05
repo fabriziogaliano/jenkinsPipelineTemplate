@@ -87,7 +87,6 @@ pipeline {
                         echo "---------------------------------------------------------------"
                         echo "----------------------> Docker Tag/Push <----------------------"
                         echo "---------------------------------------------------------------"
-                        echo "${GIT_COMMIT}"
                         // Internal Registry
                         dockerTag()
                         dockerPush()
@@ -181,6 +180,7 @@ def dockerTag() {
     node {
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
+        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_COMMIT}'
     }
 }
 
@@ -188,6 +188,7 @@ def dockerAwsTag() {
     node {
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}'
+        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_COMMIT}'
     }
 }
 
