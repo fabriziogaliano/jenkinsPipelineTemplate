@@ -44,7 +44,7 @@ pipeline {
                 extensions: [], 
                 submoduleCfg: [], 
                 userRemoteConfigs: [[
-                credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', 
+                credentialsId: "${GIT_REPO_CRED_ID}", 
                 url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
 
                 // checkout([$class: 'GitSCM', 
@@ -187,7 +187,7 @@ def dockerAwsTag() {
 
 def dockerPush() {
     node {
-        withDockerRegistry(credentialsId: '655afa6d-5a19-4f15-97ce-29ac43336234', url: "https://${DOCKER_REGISTRY}") {
+        withDockerRegistry(credentialsId: "${DOCKER_REGISTRY_CRED_ID}", url: "https://${DOCKER_REGISTRY}") {
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
     }
