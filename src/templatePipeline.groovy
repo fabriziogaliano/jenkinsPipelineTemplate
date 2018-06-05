@@ -1,6 +1,7 @@
 // Pipeline
 
 def DEPLOY_SSH_CUSTOM_PATH = ""
+def GIT_COMMIT = `echo "${GIT_COMMIT}" | cut -c1-8`
 
 pipeline {
 
@@ -18,7 +19,6 @@ pipeline {
         // Git Repository
         GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
         GIT_REPO_CRED_ID = 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5'
-        GIT_COMMIT = `echo "${GIT_COMMIT}" | cut -c1-8`
 
         // Deploy Env
         DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108' // if multiple hops are present put "," in the middle
