@@ -18,6 +18,7 @@ pipeline {
         // Git Repository
         GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
         GIT_REPO_CRED_ID = 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5'
+        GIT_COMMIT = "echo ${GIT_COMMIT} | cut -c1-8"
 
         // Deploy Env
         DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108' // if multiple hops are present put "," in the middle
@@ -194,7 +195,8 @@ def dockerPush() {
         withDockerRegistry(credentialsId: "${DOCKER_REGISTRY_CRED_ID}", url: "https://${DOCKER_REGISTRY}") {
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
-    }
+        sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_COMMIT}'
+        }
     }
 }
 
@@ -206,6 +208,7 @@ def dockerAwsPush() {
         docker.withRegistry("https://${DOCKER_AWS_REGISTRY}", 'ecr:eu-west-1:aws_registry_credential') {
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('latest')
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${GIT_REF}')
+        docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${GIT_COMMIT}')
         }
     }
 }
