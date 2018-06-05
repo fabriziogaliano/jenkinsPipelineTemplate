@@ -2,7 +2,7 @@
 
 def DEPLOY_SSH_CUSTOM_PATH = ""
 
-def env = build.getEnvironment()
+// def env = build.getEnvironment()
 def gitCommit = env['GIT_COMMIT']
 def shortGitCommit = gitCommit[0..6]
 
