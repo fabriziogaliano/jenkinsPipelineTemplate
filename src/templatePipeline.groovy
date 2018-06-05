@@ -2,6 +2,14 @@
 
 def DEPLOY_SSH_CUSTOM_PATH = ""
 
+def env = build.getEnvironment()
+def gitCommit = env['GIT_COMMIT']
+def shortGitCommit = gitCommit[0..6]
+
+def sgc = new ParametersAction([
+  new StringParameterValue("SHORT_GIT_COMMIT", shortGitCommit)
+])
+
 pipeline {
 
     agent any
@@ -18,7 +26,7 @@ pipeline {
         // Git Repository
         GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
         GIT_REPO_CRED_ID = 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5'
-        // GIT_COMMIT = `echo "${GIT_COMMIT}" | cut -c1-8`
+        // SHORT_GIT_COMMIT = `echo "${GIT_COMMIT}" | cut -c1-8`
 
         // Deploy Env
         DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108' // if multiple hops are present put "," in the middle
@@ -176,33 +184,33 @@ def dockerBuild() {
     }
 }
 
-def dockerTag() {
+def dockerTag(sgc) {
     node {
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
-        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_COMMIT}'
+        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
-def dockerAwsTag() {
+def dockerAwsTag(sgc) {
     node {
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest'
         sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}'
-        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_COMMIT}'
+        sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
-def dockerPush() {
+def dockerPushsgc(sgc) {
     node {
         withDockerRegistry(credentialsId: "${DOCKER_REGISTRY_CRED_ID}", url: "https://${DOCKER_REGISTRY}") {
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
-        sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_COMMIT}'
+        sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
         }
     }
 }
 
-def dockerAwsPush() {
+def dockerAwsPush(sgc) {
     node {
 
         env.AWS_ECR_LOGIN = 'true'
@@ -210,24 +218,26 @@ def dockerAwsPush() {
         docker.withRegistry("https://${DOCKER_AWS_REGISTRY}", 'ecr:eu-west-1:aws_registry_credential') {
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('latest')
         docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${GIT_REF}')
-        docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${GIT_COMMIT}')
+        docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${SHORT_GIT_COMMIT}')
         }
     }
 }
 
-def cleanUp() {
+def cleanUp(sgc) {
     node {
         sh 'docker rmi ${DOCKER_REGISTRY}/${JOB_NAME}:${GIT_REF} '
-        sh 'docker rmi ${DOCKER_REGISTRY}/${JOB_NAME}:latest '
-        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} '
+        sh 'docker rmi ${DOCKER_REGISTRY}/${JOB_NAME}:latest'
+        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF}'
+        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
-def cleanAwsUp() {
+def cleanAwsUp(sgc) {
     node {
-        sh 'docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF} '
+        sh 'docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}'
         sh 'docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest'
-        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} '
+        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF}'
+        sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
