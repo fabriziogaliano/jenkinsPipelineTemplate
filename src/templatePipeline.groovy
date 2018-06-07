@@ -40,9 +40,9 @@ pipeline {
         // SHORT_GIT_COMMIT = `echo "${GIT_COMMIT}" | cut -c1-8`
 
         // Deploy Env
-        DEPLOY_SSH_DEV_TARGET = 'root@192.168.0.108'
-        DEPLOY_SSH_PROD_TARGET = 'root@192.168.0.108'
-        DEPLOY_SSH_DEMO_TARGET = 'root@192.168.0.108'
+        DEPLOY_SSH_DEV_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108'
+        DEPLOY_SSH_PROD_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108'
+        DEPLOY_SSH_DEMO_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
 
         // DEPLOY_SSH_CUSTOM_PATH = null
