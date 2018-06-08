@@ -32,11 +32,7 @@ pipeline {
         DOCKER_REGISTRY = 'registry.zombox.it'
         DOCKER_AWS_REGISTRY = '628245238960.dkr.ecr.eu-west-1.amazonaws.com'
         DOCKER_REGISTRY_CRED_ID = '655afa6d-5a19-4f15-97ce-29ac43336234'
-<<<<<<< HEAD
-        DOCKER_REGISTRY_NS = "devcoon/"
-=======
         DOCKER_REGISTRY_NS = "zombox/"
->>>>>>> 2fafbc8c4cd7239d2c98869d19de8cf255f5fa5a
 
         // Git Repository
         GIT_REPOSITORY = 'https://github.com/fabriziogaliano'
@@ -44,16 +40,10 @@ pipeline {
         // SHORT_GIT_COMMIT = `echo "${GIT_COMMIT}" | cut -c1-8`
 
         // Deploy Env
-<<<<<<< HEAD
-        DEPLOY_SSH_DEV_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108' // concat more string "ssh -T -o StrictHostKeyChecking=no root@x.x.x.x" if you pass trough more then 1 host
-        DEPLOY_SSH_PROD_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108' // concat more string "ssh -T -o StrictHostKeyChecking=no root@x.x.x.x" if you pass trough more then 1 host
-        DEPLOY_SSH_DEFAULT_PATH = '/mnt/nfs/docker'
-=======
         DEPLOY_SSH_DEV_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108'
         DEPLOY_SSH_PROD_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108'
         DEPLOY_SSH_DEMO_TARGET = 'ssh -T -o StrictHostKeyChecking=no root@192.168.0.108'
         DEPLOY_SSH_DEFAULT_PATH = '/docker'
->>>>>>> 2fafbc8c4cd7239d2c98869d19de8cf255f5fa5a
 
         // DEPLOY_SSH_CUSTOM_PATH = null
     }
@@ -181,10 +171,6 @@ def deployInf() {
     else {
 
         DEPLOY_SSH_TARGET = "${DEPLOY_SSH_PROD_TARGET}"
-<<<<<<< HEAD
-        DEPLOY_ENV = 'PRODUCTION!'
-=======
->>>>>>> 2fafbc8c4cd7239d2c98869d19de8cf255f5fa5a
 
         echo "---------------> Deploy Infrastructure ------> PRODUCTION"
 
@@ -203,10 +189,6 @@ def npmLogin() {
 }
 
 def dockerBuild() {
-<<<<<<< HEAD
-    node {
-        sh "docker build -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ."
-=======
     switch(env.DEPLOY_ENV) {
         case "dev":
             node {
@@ -223,7 +205,6 @@ def dockerBuild() {
             node {
                 sh "docker build --build-arg buildenv=prod ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ."
             }
->>>>>>> 2fafbc8c4cd7239d2c98869d19de8cf255f5fa5a
     }
 }
 
@@ -289,20 +270,12 @@ def cleanAwsUp() {
 def deploy(DEPLOY_SSH_TARGET) {
     if (env.DEPLOY_MODE == "docker-compose") {
         node {
-<<<<<<< HEAD
-            sh "${DEPLOY_SSH_TARGET} docker-compose -f ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}/${JOB_NAME}/docker-compose.yml up -d --force-recreate"
-=======
             sh "${DEPLOY_SSH_TARGET} docker-compose -f ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}.yml up -d --force-recreate"
->>>>>>> 2fafbc8c4cd7239d2c98869d19de8cf255f5fa5a
             echo "Deployed with DOCKER-COMPOSE"
         } 
     } else {
         node {
-<<<<<<< HEAD
-            sh "${DEPLOY_SSH_TARGET} docker stack up -c ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}/${JOB_NAME}/docker-compose.yml --with-registry-auth stack_${DOCKER_STACK_NAMESPACE}${JOB_NAME}"
-=======
             sh "${DEPLOY_SSH_TARGET} docker stack up -c ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}/${DEPLOY_ENV}/${JOB_NAME}.yml --with-registry-auth ${DOCKER_STACK}_${DEPLOY_ENV}_${JOB_NAME}"
->>>>>>> 2fafbc8c4cd7239d2c98869d19de8cf255f5fa5a
             echo "Deployed with SWARM mode"
         }
     }
