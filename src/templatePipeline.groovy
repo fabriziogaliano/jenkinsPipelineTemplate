@@ -274,12 +274,18 @@ def cleanAwsUp() {
 def deploy(DEPLOY_SSH_TARGET) {
     if (env.DEPLOY_MODE == "docker-compose") {
         node {
-            sh "${DEPLOY_SSH_TARGET} docker-compose -f ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}.yml up -d --force-recreate"
+            sh "${DEPLOY_SSH_TARGET} docker-compose \
+            -f ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}${JOB_NAME}.yml \
+            up -d \
+            --force-recreate"
             echo "Deployed with DOCKER-COMPOSE"
         } 
     } else {
         node {
-            sh "${DEPLOY_SSH_TARGET} docker stack up -c ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}/${DEPLOY_ENV}/${JOB_NAME}.yml --with-registry-auth ${DOCKER_STACK}_${DEPLOY_ENV}_${JOB_NAME}"
+            sh "${DEPLOY_SSH_TARGET} docker stack up \
+            -c ${DEPLOY_SSH_DEFAULT_PATH}/${DEPLOY_SSH_CUSTOM_PATH}/${DEPLOY_ENV}/${JOB_NAME}.yml \
+            --with-registry-auth \
+            ${DOCKER_STACK}_${DEPLOY_ENV}_${JOB_NAME}"
             echo "Deployed with SWARM mode"
         }
     }
