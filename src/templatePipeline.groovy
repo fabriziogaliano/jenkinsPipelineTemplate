@@ -180,18 +180,34 @@ def dockerBuild() {
         case "dev":
             node {
                 sh "docker build \
-                --label ${env.BUILD_NUMBER} --label GIT_REF=${GIT_REV} --build-arg buildenv=dev ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ."
+                --label JENKINS_BUILD_NUMBER=${env.BUILD_NUMBER} \
+                --label GIT_REF=${GIT_REV} \
+                --label buildenv=dev \
+                --build-arg buildenv=dev ${DOCKER_CUSTOM_OPT} \
+                -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} \
+                ."
             }
         break
         case "demo":
             node {
-                sh "docker build --label ${env.BUILD_NUMBER} --label GIT_REF=${GIT_REV} --build-arg buildenv=demo ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ."
+                sh "docker build \
+                --label JENKINS_BUILD_NUMBER=${env.BUILD_NUMBER} \
+                --label GIT_REF=${GIT_REV} \
+                --label buildenv=demo \
+                --build-arg buildenv=demo ${DOCKER_CUSTOM_OPT} \
+                -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} \
+                ."
             }
         break
-        // case "prod":
         default:
             node {
-                sh "docker build --label ${env.BUILD_NUMBER} --label GIT_REF=${GIT_REV} --build-arg buildenv=prod ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ."
+                sh "docker build \
+                --label JENKINS_BUILD_NUMBER=${env.BUILD_NUMBER} \
+                --label GIT_REF=${GIT_REV} \
+                --label buildenv=prod \
+                --build-arg buildenv=prod ${DOCKER_CUSTOM_OPT} \
+                -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} \
+                ."
             }
     }
 }
