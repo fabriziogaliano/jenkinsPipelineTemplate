@@ -64,10 +64,8 @@ pipeline {
                 // poll: false
 
                 checkout([$class: 'GitSCM', 
-                branches: [[name: "${GIT_REF}"]], 
-                doGenerateSubmoduleConfigurations: false, 
-                extensions: [], 
-                submoduleCfg: [], 
+                branches: [[name: "${GIT_REF}"]],
+                poll: false,
                 userRemoteConfigs: [[
                 credentialsId: "${GIT_REPO_CRED_ID}", 
                 url: "${GIT_REPOSITORY}/${JOB_NAME}.git"]]])
