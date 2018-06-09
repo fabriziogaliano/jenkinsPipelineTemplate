@@ -58,27 +58,7 @@ pipeline {
                 echo "----------------------> Project Update <----------------------"
                 echo "--------------------------------------------------------------"
 
-                // checkout scm: [$class: 'GitSCM', 
-                // userRemoteConfigs: [[url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git', 
-                // credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5']], branches: [[name: v0.0.1]]],
-                // poll: false
-
-                checkout([$class: 'GitSCM', 
-                branches: [[name: "${GIT_REF}"]],
-                poll: false,
-                userRemoteConfigs: [[
-                credentialsId: "${GIT_REPO_CRED_ID}", 
-                url: "${GIT_REPOSITORY}/${JOB_NAME}.git"]]])
-
-                // checkout([$class: 'GitSCM', 
-                // branches: [[name: '${GIT_REF}']], 
-                // doGenerateSubmoduleConfigurations: false, 
-                // extensions: [], 
-                // submoduleCfg: [], 
-                // userRemoteConfigs: [[
-                // credentialsId: 'aad8cb5b-ddd8-47e3-a8d4-b9f128cf3fd5', 
-                // refspec: '+refs/heads/*:refs/remotes/*', 
-                // url: 'https://github.com/fabriziogaliano/${JOB_NAME}.git']]])
+                initCheckout()
 
                 echo "----------------------> Project Updated <---------------------"
             }
@@ -107,7 +87,7 @@ pipeline {
         stage('Docker Tag/Push') {
             steps {
                 script {
-                    if (env.GIT_REF == 'master') {
+                    if (env.GIT_REV == 'master') {
                         echo "-------------------------------------------------------------------"
                         echo "----------------------> Docker AWS Tag/Push <----------------------"
                         echo "-------------------------------------------------------------------"
@@ -152,6 +132,15 @@ pipeline {
 
 // Functions
 
+def initCheckout() {
+        checkout([$class: 'GitSCM', 
+        branches: [[name: "${GIT_REV}"]],
+        poll: false,
+        userRemoteConfigs: [[
+        credentialsId: "${GIT_REPO_CRED_ID}", 
+        url: "${GIT_REPOSITORY}/${JOB_NAME}.git"]]])
+}
+
 def deployInf() {
     if ( env.DEPLOY_ENV == 'dev' ) {
 
@@ -190,42 +179,42 @@ def dockerBuild() {
     switch(env.DEPLOY_ENV) {
         case "dev":
             node {
-                sh "docker build --build-arg buildenv=dev ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ."
+                sh "docker build --build-arg buildenv=dev ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ."
             }
         break
         case "demo":
             node {
-                sh "docker build --build-arg buildenv=demo ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ."
+                sh "docker build --build-arg buildenv=demo ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ."
             }
         break
         // case "prod":
         default:
             node {
-                sh "docker build --build-arg buildenv=prod ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ."
+                sh "docker build --build-arg buildenv=prod ${DOCKER_CUSTOM_OPT} -t ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ."
             }
     }
 }
 
 def dockerTag() {
     node {
-        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:latest"
-        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:${GIT_REF}"
-        // sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
+        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:latest"
+        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:${GIT_REV}"
+        // sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
 def dockerAwsTag() {
     node {
-        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest"
-        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}"
-        // sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
+        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest"
+        sh "docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REV}"
+        // sh 'docker tag ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV} ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
 def dockerPush() {
     node {
         withDockerRegistry(credentialsId: "${DOCKER_REGISTRY_CRED_ID}", url: "https://${DOCKER_REGISTRY}") {
-        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:${GIT_REF}"
+        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:${GIT_REV}"
         sh "docker push ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:latest"
         // sh 'docker push ${DOCKER_REGISTRY}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
         }
@@ -238,10 +227,10 @@ def dockerAwsPush() {
         env.AWS_ECR_LOGIN = 'true'
 
         docker.withRegistry("https://${DOCKER_AWS_REGISTRY}", 'ecr:eu-west-1:aws_registry_credential') {
-        sh "docker push ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}"
+        sh "docker push ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REV}"
         sh "docker push ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest" 
         // docker.image("${DOCKER_AWS_REGISTRY}/${JOB_NAME}").push("latest")
-        // docker.image("${DOCKER_AWS_REGISTRY}/${JOB_NAME}").push("${GIT_REF}")
+        // docker.image("${DOCKER_AWS_REGISTRY}/${JOB_NAME}").push("${GIT_REV}")
         // docker.image('${DOCKER_AWS_REGISTRY}/${JOB_NAME}').push('${SHORT_GIT_COMMIT}')
         }
     }
@@ -249,18 +238,18 @@ def dockerAwsPush() {
 
 def cleanUp() {
     node {
-        sh "docker rmi ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:${GIT_REF}"
+        sh "docker rmi ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:${GIT_REV}"
         sh "docker rmi ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_NS}${JOB_NAME}:latest"
-        sh "docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF}"
+        sh "docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV}"
         // sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
 
 def cleanAwsUp() {
     node {
-        sh "docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REF}"
+        sh "docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:${GIT_REV}"
         sh "docker rmi ${DOCKER_AWS_REGISTRY}/${JOB_NAME}:latest"
-        sh "docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REF}"
+        sh "docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${GIT_REV}"
         // sh 'docker rmi ${DOCKER_IMAGE_BUILD_NAME}/${JOB_NAME}:${SHORT_GIT_COMMIT}'
     }
 }
