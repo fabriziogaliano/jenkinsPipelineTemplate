@@ -1,4 +1,4 @@
-// Pipeline
+// Pipeline v0.0.1-a
 
 def DEPLOY_SSH_CUSTOM_PATH = ""
 def DOCKER_CUSTOM_OPT = ""
