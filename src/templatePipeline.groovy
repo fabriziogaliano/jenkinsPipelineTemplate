@@ -1,4 +1,4 @@
-// Pipeline v0.0.1-a
+// Pipeline v0.0.1-b
 
 def DEPLOY_SSH_CUSTOM_PATH = ""
 def DOCKER_CUSTOM_OPT = ""
@@ -163,7 +163,7 @@ def deployInf() {
 
 def npmLogin() {
     withCredentials([usernamePassword(credentialsId: "${NPM_CRED_ID}", usernameVariable: "NPM_CRED_USER", passwordVariable: "NPM_CRED_PASSWD")]) {
-        sh "${ASSETS_DIR}/npmlogin.sh ${NPM_REG_URL} ${NPM_CRED_USER} ${NPM_CRED_PASSWD} ${NPM_REG_MAIL}"
+        sh "${ASSETS_DIR}/npm/npmlogin.sh ${NPM_REG_URL} ${NPM_CRED_USER} ${NPM_CRED_PASSWD} ${NPM_REG_MAIL}"
         }
 }
 
