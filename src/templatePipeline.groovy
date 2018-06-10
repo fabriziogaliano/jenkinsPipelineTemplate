@@ -4,21 +4,13 @@ def DEPLOY_SSH_CUSTOM_PATH = ""
 def DOCKER_CUSTOM_OPT = ""
 def DOCKER_STACK = ""
 
-// def env = build.getEnvironment()
-// def gitCommit = env['GIT_COMMIT']
-// def shortGitCommit = gitCommit[0..6]
-
-// def sgc = new ParametersAction([
-//   new StringParameterValue("SHORT_GIT_COMMIT", shortGitCommit)
-// ])
-
 pipeline {
 
     agent any
 
     environment {
         // Assets and scripts
-        ASSETS_DIR = "/var/jenkins_home/assets"
+        ASSETS_DIR = "/docker/tools"
 
         // Default Docker build image name
         DOCKER_IMAGE_BUILD_NAME = 'ciserver'
