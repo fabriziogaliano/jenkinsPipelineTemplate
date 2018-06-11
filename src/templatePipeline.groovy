@@ -9,6 +9,9 @@ pipeline {
     agent any
 
     environment {
+        // JENKINS
+        JENKINS_HOME = '/var/jenkins_home'
+        
         // Assets and scripts
         ASSETS_DIR = "/docker/tools"
 
@@ -163,7 +166,9 @@ def deployInf() {
 
 def npmLogin() {
     withCredentials([usernamePassword(credentialsId: "${NPM_CRED_ID}", usernameVariable: "NPM_CRED_USER", passwordVariable: "NPM_CRED_PASSWD")]) {
+        sh 'npm set registry ${NPM_REG_URL}'
         sh "expect ${ASSETS_DIR}/npm/npmlogin.sh ${NPM_REG_URL} ${NPM_CRED_USER} ${NPM_CRED_PASSWD} ${NPM_REG_MAIL}"
+        sh 'cp /root/.npmrc ${JENKINS_HOME}/workspace/${JOB_NAME}@2/.npmrc'
         }
 }
 
