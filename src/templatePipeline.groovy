@@ -163,7 +163,7 @@ def deployInf() {
 
 def npmLogin() {
     withCredentials([usernamePassword(credentialsId: "${NPM_CRED_ID}", usernameVariable: "NPM_CRED_USER", passwordVariable: "NPM_CRED_PASSWD")]) {
-        sh "${ASSETS_DIR}/npm/npmlogin.sh ${NPM_REG_URL} ${NPM_CRED_USER} ${NPM_CRED_PASSWD} ${NPM_REG_MAIL}"
+        sh "bash ${ASSETS_DIR}/npm/npmlogin.sh ${NPM_REG_URL} ${NPM_CRED_USER} ${NPM_CRED_PASSWD} ${NPM_REG_MAIL}"
         }
 }
 
